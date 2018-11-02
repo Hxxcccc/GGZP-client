@@ -19,14 +19,14 @@ export const errMsg = msg => ({type: ERR_MSG, data: msg});
 export const register = data => {  //data是用户提交的请求参数
   //表单验证
   const {username, password, rePassword, type} = data;
-  if (!username) {
+  if(!username) {
     return errMsg({username, password, msg: '请输入用户名'});
-  } else if (!password) {
+  }else if(!password) {
     return errMsg({username, password, msg: '请输入密码'});
-  } else if (password !== rePassword) {
-    return errMsg({username, password, msg: '两次密码输入不一致，请重新输入'});
-  } else if (!type) {
-    return errMsg({username, password, msg: '请选择账号类型'});
+  }else if(password !== rePassword) {
+    return errMsg({username, password, msg: '两次密码输入不一致,请重新输入'});
+  }else if(!type) {
+    return errMsg({username, password, msg: '请选择账户类型'});
   }
 
   return dispatch => {

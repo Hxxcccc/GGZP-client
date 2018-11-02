@@ -18,7 +18,7 @@ function user(preState = initUserState, action) {
       return {username: action.data.username, type: action.data.type, mag: ''};
     case ERR_MSG:
       //在node和浏览器端默认对象是不能使用... , 但是react脚手架项目, babel帮我让对象能够使用...
-      return {...preState, msg: action.data};
+      return {...action.data};
     default :
       return preState;
   }
