@@ -3,7 +3,7 @@
  */
 
 import {combineReducers} from 'redux';
-import {AUTH_SUCCESS, ERR_MSG} from './action-types';
+import {AUTH_SUCCESS, ERR_MSG, RESET_USER, UPDATE_USER} from './action-types';
 import {getRedirectPath} from "../utils";
 
 //初始化状态(今后reducer函数要管理的状态)
@@ -20,6 +20,10 @@ function user(preState = initUserState, action) {
       return {username: action.data.username, type: action.data.type, mag: '', redirectTo: getRedirectPath(action.data.type, action.data.header)};
     case ERR_MSG:
       //在node和浏览器端默认对象是不能使用... , 但是react脚手架项目, babel帮我让对象能够使用...
+      return {...action.data};
+    case UPDATE_USER:
+      return action.data;
+    case RESET_USER:
       return {...action.data};
     default :
       return preState;

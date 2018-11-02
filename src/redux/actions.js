@@ -5,8 +5,8 @@
  */
 
 //引入发送请求的方法
-import {reqLogin, reqRegister} from '../api';
-import {AUTH_SUCCESS, ERR_MSG} from './action-types';
+import {reqLogin, reqRegister, reqUpdateUserInfo} from '../api';
+import {AUTH_SUCCESS, ERR_MSG, UPDATE_USER, RESET_USER} from './action-types';
 
 //action-type有几个值 action就有几个同步action
 //同步action 注册成功
@@ -14,6 +14,12 @@ export const authSuccess = user => ({type: AUTH_SUCCESS, data: user});
 
 //同步action 注册失败
 export const errMsg = msg => ({type: ERR_MSG, data: msg});
+
+//同步action 更新用户数据成功
+export const updateUser = user => ({type: UPDATE_USER, data: user});
+
+//同步action 更新用户数据失败
+export const resetUser = msg => ({type: RESET_USER, data: msg});
 
 //注册的异步action
 export const register = data => {  //data是用户提交的请求参数
@@ -47,6 +53,43 @@ export const register = data => {  //data是用户提交的请求参数
       .catch(err => {
         //请求失败
         dispatch(errMsg('网络不稳定，请重新试试'));
+      })
+  }
+};
+
+//更新用户数据的异步action
+export const updateUserInfo = data => {  //data是用户提交的请求参数
+  //表单验证
+  const {header, post, company, salary, info} = data;
+  if (!header) {
+    return resetUser({msg: '请选择头像'});
+  } else if (!post) {
+    return errMsg({msg: '请输入招聘职位'});
+  } else if (!company) {
+    return errMsg({msg: '请输入公司名称'});
+  } else if (!salary) {
+    return errMsg({msg: '请输入薪资范围'});
+  } else if (!info) {
+    return errMsg({msg: '请输入公司简介'});
+  }
+
+  return dispatch => {
+    //发送ajax
+    reqUpdateUserInfo(data)
+      .then(res => {
+        //请求成功
+        const result = res.data;  //res {header: {}, data:{响应数据}}
+        if (result.code === 0) {
+          //注册成功
+          dispatch(updateUser(result.data));  //result.data响应信息的用户信息
+        } else {
+          //注册失败
+          dispatch(resetUser({msg: result.msg}));
+        }
+      })
+      .catch(err => {
+        //请求失败
+        dispatch(resetUser({msg:'网络不稳定，请重新试试'}));
       })
   }
 };
