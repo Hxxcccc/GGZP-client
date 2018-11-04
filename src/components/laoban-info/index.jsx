@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
-import {NavBar, InputItem, Button, List, TextareaItem} from 'antd-mobile';
+import {NavBar, InputItem, Button, TextareaItem} from 'antd-mobile';
 import PropTypes from 'prop-types';
+import {Redirect} from 'react-router-dom';
 
 import HeaderSelector from '../header-selector';
 
 class LaobanInfo extends Component {
-
   static propTypes = {
     user: PropTypes.object.isRequired,
     updateUserInfo: PropTypes.func.isRequired
-  };
+  }
 
   state = {
     header: '',
@@ -17,26 +17,29 @@ class LaobanInfo extends Component {
     post: '',
     salary: '',
     company: ''
-  };
+  }
 
   handleChange = (name, val) => {
     this.setState({
       [name]: val
     })
-  };
+  }
 
   setHeader = header => {
     this.setState({
       header
     })
-  };
+  }
 
   saveUserInfo = () => {
-    this.props.updateUserInfo(this.state)
-  };
+    this.props.updateUserInfo({...this.state, type: 'laoban'});
+  }
 
   render () {
-    const {msg} = this.props.user;
+    const {msg, header} = this.props.user;
+    if (header) {
+      return <Redirect to='/laoban'/>
+    }
     return (
       <div>
         <NavBar>老板信息完善</NavBar>
@@ -46,7 +49,7 @@ class LaobanInfo extends Component {
         <InputItem onChange={val => this.handleChange('company', val)}>公司名称:</InputItem>
         <InputItem onChange={val => this.handleChange('salary', val)}>职位薪资:</InputItem>
         <TextareaItem title="职位要求" rows={3} onChange={val => this.handleChange('info', val)}/>
-        <Button type="warning" onClick={this.saveUserInfo}>保 存</Button>
+        <Button type="primary" onClick={this.saveUserInfo}>保 存</Button>
       </div>
     )
   }

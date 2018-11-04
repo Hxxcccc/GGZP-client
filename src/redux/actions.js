@@ -5,7 +5,7 @@
  */
 
 //引入发送请求的方法
-import {reqLogin, reqRegister, reqUpdateUserInfo} from '../api';
+import {reqLogin, reqRegister, reqUpdateUserInfo, reqGetUserInfo} from '../api';
 import {AUTH_SUCCESS, ERR_MSG, UPDATE_USER, RESET_USER} from './action-types';
 
 //action-type有几个值 action就有几个同步action
@@ -60,17 +60,21 @@ export const register = data => {  //data是用户提交的请求参数
 //更新用户数据的异步action
 export const updateUserInfo = data => {  //data是用户提交的请求参数
   //表单验证
-  const {header, post, company, salary, info} = data;
+  const {header, post, company, salary, info, type} = data;
   if (!header) {
     return resetUser({msg: '请选择头像'});
   } else if (!post) {
-    return errMsg({msg: '请输入招聘职位'});
-  } else if (!company) {
-    return errMsg({msg: '请输入公司名称'});
-  } else if (!salary) {
-    return errMsg({msg: '请输入薪资范围'});
+    return resetUser({msg: type === 'laoban' ? '请输入招聘职位' : '请输入要应聘的职位'});
   } else if (!info) {
-    return errMsg({msg: '请输入公司简介'});
+    return resetUser({msg: type === 'laoban' ? '请输入公司简介' : '请输入个人简介'});
+  }
+
+  if(type === 'laoban') {
+    if(!company) {
+      return resetUser({msg: '请输入公司名称'});
+    }else if (!salary) {
+      return resetUser({msg: '请输入薪资范围'})
+    }
   }
 
   return dispatch => {
@@ -92,7 +96,29 @@ export const updateUserInfo = data => {  //data是用户提交的请求参数
         dispatch(resetUser({msg:'网络不稳定，请重新试试'}));
       })
   }
-};
+}
+
+//获取用户信息的异步action
+export const getUserInfo = () => {
+  return dispatch => {
+    //发送请求
+    reqGetUserInfo()
+      .then(res => {
+        const result = res.data;
+        if(result.code === 0){
+          //请求成功
+          dispatch(updateUser(result.data));
+        }else {
+          //请求失败
+          dispatch(resetUser({msg: result.msg}));
+        }
+      })
+      .catch(err => {
+        dispatch(resetUser({msg: '网络不稳定,请重试'}));
+      })
+  }
+}
+
 
 /*
   步骤
