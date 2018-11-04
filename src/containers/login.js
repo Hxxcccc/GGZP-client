@@ -3,11 +3,11 @@
  */
 import {connect} from 'react-redux';
 //引入注册UI组件
-import Register from '../components/register';
+import Login from '../components/login';
 //actions
-import {register} from '../redux/actions';
+import {login} from '../redux/actions';
 
 export default connect(
   state => ({user: state.user}), //状态数据
-  {register}  //操作状态数据的方法
-)(Register)
+  {login}  //操作状态数据的方法
+)(Login)

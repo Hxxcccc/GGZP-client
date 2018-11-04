@@ -5,21 +5,20 @@ import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 
 import LaobanInfo from '../../containers/laoban-info';
-import Laoban from '../../containers/laoban';
 import DashenInfo from '../../containers/dashen-info';
-import Dashen from '../../containers/dashen';
-import Message from '../../containers/message';
-import Personal from '../../containers/personal';
-import NavFooter from '../../components/nav-footer';
-import  {getRedirectPath} from '../../utils';
+import Personal from "../../containers/personal";
+import Laoban from "../../containers/laoban";
+import Dashen from "../../containers/dashen";
+import Message from "../../containers/message";
+import NavFooter from "../../components/nav-footer";
+import {getRedirectPath} from '../../utils';
 
 class Main extends Component {
-
   static propTypes = {
     user: PropTypes.object.isRequired,
     getUserInfo: PropTypes.func.isRequired
   }
-
+  
   navList = [
     {
       path: '/laoban', // 路由路径
@@ -34,7 +33,6 @@ class Main extends Component {
       title: '老板列表',
       icon: 'laoban',
       text: '老板',
-      hide: true
     },
     {
       path: '/message', // 路由路径
@@ -51,55 +49,50 @@ class Main extends Component {
       text: '个人',
     }
   ]
-
+  
+  
+  
   render () {
-
     /*
-   1.本地没有cookie, 跳转到登录页面(用户没有登录 一上来输入网址访问)
-   2.本地有cookie, redux没有状态数据(用户登录了 刷新了页面) 根据cookie发送请求 请求当前用户的状态数据
-     保存在redux中
-   3.本地有cookie 并且redux有数据 直接使用
-  */
-
-    //1.本地没有cookie, 跳转到登录页面(用户没有登录 一上来输入网址访问)
+    1. 本地没有cookie，跳转到登录页面（用户没有登录，一上来输入网址访问）
+    2. 本地有cookie ， redux没有状态数据（用户登录了，刷新了页面），根据cookie发送请求请求当前用户的状态数据，保存在redux
+    3. 本地有cookie ，并且redux有数据， 直接使用
+   */
+    // 1. 本地没有cookie，跳转到登录页面（用户没有登录，一上来输入网址访问）
     const userid = Cookies.get('userid');
-    if(!userid) {
-      //this.props.history.replace('/login');
+    if (!userid) {
+      // this.props.history.replace('/login');
       return <Redirect to='/login'/>;
     }
-
-    //2.本地有cookie, redux没有状态数据(用户登录了 刷新了页面) 根据cookie发送请求 请求当前用户的状态数据
+    // 2. 本地有cookie ， redux没有状态数据（用户登录了，刷新了页面），根据cookie发送请求请求当前用户的状态数据，保存在redux
     const {user} = this.props;
-    if(!user._id) {
-      //发送请求 请求用户的数据 保存在redux中
+    if (!user._id) {
+      //发送请求，请求用户的数据，保存在redux中
       this.props.getUserInfo();
-      return <div>loading...</div>
-      return
+      return <div>loading...</div>;
     }
-
-    //3.本地有cookie 并且redux有数据 直接使用
-    //如果用户直接访问/路径 没有界面显示 重新向到laoban或dashen laobanInfo dashenInfo
-    //获取当前的路由路径
+    // 3. 本地有cookie ，并且redux有数据， 直接使用
+    // 如果用户直接访问 / 路径，没有界面显示，重定向到/laoban  /dashen /laobanInfo  /dashenInfo
+    //获取当前路由路径
     const {pathname} = this.props.location;
-    if(pathname === '/') {
+    
+    if (pathname === '/') {
       return <Redirect to={getRedirectPath(user.type, user.header)}/>
     }
-
+    
     const {navList} = this;
-
-    //如果当前type是laoban显示大神按钮
-    //如果当前type是dashen显示老板按钮
-    if(user.type === 'dashen') {
-      navList[1].hide = true;
-      navList[0].hide = false;
-    }else {
+    
+    if (user.type === 'dashen') {
+      //如果当前type是dashen显示老板按钮
       navList[0].hide = true;
-      navList[1].hide = false;
+    } else {
+      //如果当前type是laoban显示大神按钮
+      navList[1].hide = true;
     }
-
+    
     //当前路由路径对应显示的nav对象
-    const currentNav = navList.find(nav => pathname === nav.path)
-
+    const currentNav = navList.find(nav => pathname === nav.path);
+    
     return (
       <div>
         {currentNav ? <NavBar>{currentNav.title}</NavBar> : ''}
@@ -111,7 +104,7 @@ class Main extends Component {
           <Route path="/message" component={Message}/>
           <Route path="/personal" component={Personal}/>
         </Switch>
-        {currentNav ?  <NavFooter navList={navList}/> : ''}
+        {currentNav ? <NavFooter navList={navList}/> : ''}
       </div>
     )
   }

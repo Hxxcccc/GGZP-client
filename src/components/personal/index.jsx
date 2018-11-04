@@ -13,23 +13,23 @@ export default class Personal extends React.Component {
   static propTypes = {
     user: PropTypes.object.isRequired
   }
-
+  
   logout = () => {
     Modal.alert('退出登录', '你确认退出登录?', [
       { text: '取消', onPress: () => {} },
       { text: '确认', onPress: () => {
-          //退出登录
-          //清除cookie
+        //退出登录
+        //清除cookie
           Cookies.remove('userid');
-          //路由跳转到登录页面
+        //路由跳转到登录页面
           this.props.history.replace('/login');
         }},
     ])
   }
-
+  
   render() {
     const {user} = this.props;
-
+    
     return (
       <div>
         <Result

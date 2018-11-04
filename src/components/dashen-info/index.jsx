@@ -10,29 +10,29 @@ class DashenInfo extends Component {
     user: PropTypes.object.isRequired,
     updateUserInfo: PropTypes.func.isRequired
   }
-
+  
   state = {
     header: '',
     info: '',
     post: '',
   }
-
+  
   handleChange = (name, val) => {
     this.setState({
       [name]: val
     })
   }
-
+  
   setHeader = header => {
     this.setState({
       header
     })
   }
-
+  
   saveUserInfo = () => {
     this.props.updateUserInfo(this.state);
   }
-
+  
   render () {
     const {msg, header} = this.props.user;
     if (header) {
