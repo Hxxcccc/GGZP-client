@@ -5,7 +5,6 @@ import {Redirect} from 'react-router-dom';
 
 //引入logo组件
 import Logo from '../logo';
-import {reqRegister} from '../../api';
 
 const Item = List.Item;
 

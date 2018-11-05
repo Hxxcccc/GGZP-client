@@ -5,8 +5,8 @@
  */
 
 //引入发送请求的方法
-import {reqLogin, reqRegister, reqUpdateUserInfo} from '../api';
-import {AUTH_SUCCESS, ERR_MSG, UPDATE_USER, RESET_USER} from './action-types';
+import {reqLogin, reqRegister, reqUpdateUserInfo, reqGetUserInfo, reqGetUserList} from '../api';
+import {AUTH_SUCCESS, ERR_MSG, UPDATE_USER, RESET_USER, RESET_USER_LIST, UPDATE_USER_LIST} from './action-types';
 
 //action-type有几个值 action就有几个同步action
 //同步action 注册成功
@@ -20,6 +20,12 @@ export const updateUser = user => ({type: UPDATE_USER, data: user});
 
 //同步action 更新用户数据失败
 export const resetUser = msg => ({type: RESET_USER, data: msg});
+
+//同步action 更新用户列表数据成功
+export const updateUserList = userlist => ({type: UPDATE_USER_LIST, data: userlist});
+
+//同步action 更新用户列表数据失败
+export const resetUserList = msg => ({type: RESET_USER_LIST, data: msg});
 
 //注册的异步action
 export const register = data => {  //data是用户提交的请求参数
@@ -35,6 +41,7 @@ export const register = data => {  //data是用户提交的请求参数
     return errMsg({username, password, msg: '请选择账户类型'});
   }
 
+  //异步的方法
   return dispatch => {
     //发送ajax
     reqRegister(data)
@@ -57,22 +64,62 @@ export const register = data => {  //data是用户提交的请求参数
   }
 };
 
-//更新用户数据的异步action
-export const updateUserInfo = data => {  //data是用户提交的请求参数
+//登录的异步action
+export const login = data => {
+  //data 用户提交的请求参数
   //表单验证
-  const {header, post, company, salary, info} = data;
+  const {username, password} = data;
+  if(!username) {
+    return errMsg({msg: '请输入用户名'});
+  }else if (!password) {
+    return errMsg({msg: '请输入密码'});
+  }
+
+  //异步的方法
+  return dispatch => {
+    //发送ajax
+    reqLogin(data)
+      .then(res => {
+        //请求成功
+        const result = res.data;
+        if(result.code === 0) {
+          //注册成功
+          dispatch(authSuccess(result.data));
+        }else {
+          console.log(result.msg);
+          //注册失败
+          dispatch(errMsg({msg: result.msg}));
+        }
+      })
+      .catch(err => {
+        //请求失败
+        dispatch(errMsg({msg: '网络不稳定,请重新试试'}));
+      })
+  }
+}
+
+//更新用户数据的异步action
+export const updateUserInfo = data => {
+  //data是用户提交的请求参数
+  //表单验证 同步方式
+  const {header, post, company, salary, info, type} = data;
   if (!header) {
     return resetUser({msg: '请选择头像'});
   } else if (!post) {
-    return errMsg({msg: '请输入招聘职位'});
-  } else if (!company) {
-    return errMsg({msg: '请输入公司名称'});
-  } else if (!salary) {
-    return errMsg({msg: '请输入薪资范围'});
+    return resetUser({msg: type === 'laoban' ? '请输入招聘职位' : '请输入应聘职位'});
   } else if (!info) {
-    return errMsg({msg: '请输入公司简介'});
+    return resetUser({msg: type === 'laoban' ? '请输入公司简介' : '请输入个人简介'});
   }
 
+   if (type === 'laoban') {
+     if (!company) {
+       return resetUser({msg: '请输入公司名称'});
+     } else if (!salary) {
+       return resetUser({msg: '请输入薪资范围'});
+     }
+   }
+
+  //异步的方法
   return dispatch => {
     //发送ajax
     reqUpdateUserInfo(data)
@@ -93,6 +140,49 @@ export const updateUserInfo = data => {  //data是用户提交的请求参数
       })
   }
 };
+
+//获取用户信息的异步action
+export const getUserInfo = () => {
+  return dispatch => {
+    //发送请求
+    reqGetUserInfo()
+      .then(res => {
+        const result = res.data;
+        if (result.code === 0) {
+          //请求成功
+          dispatch(updateUser(result.data));
+        } else {
+          //请求失败
+          dispatch(resetUser({msg: result.msg}));
+        }
+      })
+      .catch(err => {
+        dispatch(resetUser({msg: '网络不稳定，请重新试试~'}));
+      })
+  }
+}
+
+//获取用户列表的异步action
+export const getUserList = type => {
+  return dispatch => {
+    //发送请求
+    reqGetUserList(type)
+      .then(res => {
+        const result = res.data;
+        if (result.code === 0) {
+          //请求成功
+          dispatch(updateUserList(result.data));
+        } else {
+          //请求失败
+          dispatch(resetUserList({msg: result.msg}));
+        }
+      })
+      .catch(err => {
+        //请求失败
+        dispatch(resetUserList({msg: '网络不稳定，请重新试试~'}));
+      })
+  }
+}
 
 /*
   步骤
