@@ -4,6 +4,8 @@
     - 异步action creator 返回值是一个回调函数
  */
 
+// 引入客户端io
+import io from 'socket.io-client';
 //引入发送请求的方法
 import {reqLogin, reqRegister, reqUpdateUserInfo, reqGetUserInfo, reqGetUserList} from '../api';
 import {AUTH_SUCCESS, ERR_MSG, UPDATE_USER, RESET_USER, RESET_USER_LIST, UPDATE_USER_LIST} from './action-types';
@@ -183,6 +185,24 @@ export const getUserList = type => {
       })
   }
 }
+
+// 连接服务器, 得到代表连接的socket对象
+const socket = io('ws://localhost:5000');
+// 绑定'receiveMessage'的监听, 来接收服务器发送的消息
+socket.on('receiveMsg', function (data) {
+  console.log('浏览器端接收服务器发送的消息:', data)
+})
+
+//发送聊天消息数据的异步action
+export const sendMessage = ({content, from, to}) => {
+  return dispatch => {
+    //发送聊天消息
+    // 客户端向服务器发送消息
+    socket.emit('sendMsg', {content, from, to});
+    console.log('浏览器端向服务器发送消息');
+  }
+}
+
 
 /*
   步骤
