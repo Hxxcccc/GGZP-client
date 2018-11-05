@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import {HashRouter, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
 
-import Login from './containers/login';
+import Login from './components/login';
 import Register from './containers/register';
-import Main from './containers/main';
+import Main from './components/main';
 import store from './redux/store';
 
-//引入公共的样式
-import './assets/less/index.less';
+//引入公共样式
+import './assets/less/inedx.less';
 
 ReactDOM.render(
   (
@@ -22,6 +22,9 @@ ReactDOM.render(
         </Switch>
       </HashRouter>
     </Provider>
-  )
-  , document.getElementById('root'));
+  ),
+
+  document.getElementById('root'));
+
+
 
