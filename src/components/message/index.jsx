@@ -75,7 +75,6 @@ class Message extends Component {
     const userid = Cookies.get('userid');
 
     const chatMsgs = this.getChatMsgs(chatList, userid);
-    console.log(chatMsgs);
 
     return (
       <List>
@@ -93,6 +92,7 @@ class Message extends Component {
                 thumb={require(`../../assets/images/${header}.png`)}
                 arrow='horizontal'
                 key={index}
+                onClick={() => this.props.history.push(`/chat/${id}`)}
               >
                 {content}
                 <Brief>{username}</Brief>
